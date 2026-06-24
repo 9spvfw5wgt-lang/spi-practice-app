@@ -6,6 +6,7 @@ const questionCount = document.querySelector("#question-count");
 const categoryFilter = document.querySelector("#category-filter");
 const startBtn = document.querySelector("#start-btn");
 const retryBtn = document.querySelector("#retry-btn");
+const retryWrongBtn = document.querySelector("#retry-wrong-btn");
 const copyNotionBtn = document.querySelector("#copy-notion-btn");
 
 const progressText = document.querySelector("#progress-text");
@@ -21,12 +22,57 @@ const scoreEl = document.querySelector("#score");
 const feedbackEl = document.querySelector("#feedback");
 const reviewList = document.querySelector("#review-list");
 
+const RECENT_QUESTION_KEY = "spi-recent-questions";
+const RECENT_QUESTION_LIMIT = 20;
+const NEVER_SEEN_INDEX = RECENT_QUESTION_LIMIT + 1;
+
 let quiz = [];
 let current = 0;
 let answers = [];
 
+function getQuestionKey(question) {
+  return `${question.category}:${question.title}:${question.body}`;
+}
+
 function shuffle(array) {
-  return [...array].sort(() => Math.random() - 0.5);
+  const shuffled = [...array];
+  for (let i = shuffled.length - 1; i > 0; i -= 1) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+  }
+  return shuffled;
+}
+
+function getRecentQuestionKeys() {
+  try {
+    const keys = JSON.parse(localStorage.getItem(RECENT_QUESTION_KEY) || "[]");
+    return Array.isArray(keys) ? keys : [];
+  } catch {
+    return [];
+  }
+}
+
+function saveRecentQuestionKeys(questions) {
+  const nextKeys = questions.map(getQuestionKey);
+  const previousKeys = getRecentQuestionKeys().filter(key => !nextKeys.includes(key));
+  localStorage.setItem(
+    RECENT_QUESTION_KEY,
+    JSON.stringify([...nextKeys, ...previousKeys].slice(0, RECENT_QUESTION_LIMIT))
+  );
+}
+
+function selectQuestions(pool, count) {
+  const targetCount = Math.min(count, pool.length);
+  const recentQuestionKeys = getRecentQuestionKeys();
+  const recencyRank = new Map(recentQuestionKeys.map((key, index) => [key, index]));
+
+  return shuffle(pool)
+    .sort((a, b) => {
+      const aRank = recencyRank.has(getQuestionKey(a)) ? recencyRank.get(getQuestionKey(a)) : NEVER_SEEN_INDEX;
+      const bRank = recencyRank.has(getQuestionKey(b)) ? recencyRank.get(getQuestionKey(b)) : NEVER_SEEN_INDEX;
+      return bRank - aRank;
+    })
+    .slice(0, targetCount);
 }
 
 function startQuiz() {
@@ -36,7 +82,13 @@ function startQuiz() {
     ? QUESTION_BANK
     : QUESTION_BANK.filter(q => q.category === category);
 
-  quiz = shuffle(pool).slice(0, Math.min(count, pool.length));
+  quiz = selectQuestions(pool, count);
+  saveRecentQuestionKeys(quiz);
+  startQuizWithQuestions(quiz);
+}
+
+function startQuizWithQuestions(questions) {
+  quiz = questions;
   answers = Array(quiz.length).fill(null);
   current = 0;
 
@@ -44,6 +96,16 @@ function startQuiz() {
   resultScreen.classList.add("hidden");
   quizScreen.classList.remove("hidden");
   renderQuestion();
+}
+
+function getWrongQuestions() {
+  return quiz.filter((q, i) => answers[i] !== q.answer);
+}
+
+function retryWrongQuestions() {
+  const wrongQuestions = getWrongQuestions();
+  if (wrongQuestions.length === 0) return;
+  startQuizWithQuestions(wrongQuestions);
 }
 
 function renderQuestion() {
@@ -95,6 +157,8 @@ function showResult() {
   const rate = Math.round((correctCount / quiz.length) * 100);
 
   scoreEl.textContent = `${correctCount} / ${quiz.length} 正解（${rate}%）`;
+  retryWrongBtn.disabled = correctCount === quiz.length;
+  retryWrongBtn.textContent = correctCount === quiz.length ? "再挑戦する間違いはありません" : "間違えた問題だけ再挑戦";
 
   if (rate === 100) {
     feedbackEl.textContent = "全問正解。かなり良いです。次は出題数を増やすか、問題を難しくしてOK。";
@@ -178,6 +242,7 @@ retryBtn.addEventListener("click", () => {
   resultScreen.classList.add("hidden");
   startScreen.classList.remove("hidden");
 });
+retryWrongBtn.addEventListener("click", retryWrongQuestions);
 copyNotionBtn.addEventListener("click", copyNotionText);
 nextBtn.addEventListener("click", nextQuestion);
 prevBtn.addEventListener("click", prevQuestion);

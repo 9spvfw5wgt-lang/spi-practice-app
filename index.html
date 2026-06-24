@@ -11,13 +11,14 @@
     <header class="hero">
       <p class="eyebrow">SPI 言語対策</p>
       <h1>SPI練習アプリ</h1>
-      <p class="lead">10問ずつ解いて、最後に採点。間違えた問題だけNotion用にまとめられます。</p>
+      <p class="lead">iPhoneでも片手で解きやすく、最後に採点。間違えた問題だけNotion用にまとめたり再挑戦できます。</p>
     </header>
 
     <main>
       <section id="start-screen" class="card">
         <h2>練習を始める</h2>
         <p>今は「語句の関係」「二語の関係」「空欄補充」中心のスターター版です。</p>
+        <p class="helper-text">直近に解いた問題はなるべく後回しにして出題します。</p>
         <div class="settings">
           <label>
             出題数
@@ -60,7 +61,8 @@
         <p id="score" class="score"></p>
         <p id="feedback"></p>
         <div class="result-actions">
-          <button id="retry-btn" class="primary">もう一度</button>
+          <button id="retry-wrong-btn" class="primary">間違えた問題だけ再挑戦</button>
+          <button id="retry-btn" class="ghost">条件を変えてもう一度</button>
           <button id="copy-notion-btn" class="ghost">間違いをNotion用にコピー</button>
         </div>
         <h3>復習</h3>
