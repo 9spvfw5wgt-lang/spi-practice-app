@@ -407,6 +407,29 @@ button:disabled {
     backdrop-filter: blur(14px);
   }
 
+  .settings {
+    grid-template-columns: 1fr;
+  }
+
+  #question-title {
+    font-size: 21px;
+  }
+
+  .choice {
+    padding: 16px;
+  }
+
+  .quiz-actions,
+  .result-actions {
+    position: sticky;
+    bottom: 0;
+    margin: 20px -18px -18px;
+    padding: 12px 18px max(12px, env(safe-area-inset-bottom));
+    background: rgba(255, 255, 255, 0.96);
+    border-top: 1px solid #e5ebf3;
+    backdrop-filter: blur(10px);
+  }
+
   button {
     width: 100%;
   }
