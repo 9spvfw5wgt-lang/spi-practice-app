@@ -9,15 +9,30 @@
 <body>
   <div class="app">
     <header class="hero">
-      <p class="eyebrow">SPI 言語対策</p>
-      <h1>SPI練習アプリ</h1>
-      <p class="lead">10問ずつ解いて、最後に採点。間違えた問題だけNotion用にまとめられます。</p>
+      <div class="hero-copy">
+        <p class="eyebrow">TODAY'S SPI</p>
+        <h1>今日のSPI</h1>
+        <p class="lead">iPhoneで毎日10問。正解位置は毎回シャッフル、間違えた問題だけすぐ復習できます。</p>
+      </div>
+      <div class="daily-card" aria-label="今日のチャレンジ">
+        <span class="daily-card__label">10問チャレンジ</span>
+        <strong>毎日3分</strong>
+        <span>言語問題をサクッと積み上げ</span>
+      </div>
     </header>
 
     <main>
-      <section id="start-screen" class="card">
-        <h2>練習を始める</h2>
-        <p>今は「語句の関係」「二語の関係」「空欄補充」中心のスターター版です。</p>
+      <section id="start-screen" class="card start-card">
+        <div class="section-heading">
+          <span class="section-kicker">Daily practice</span>
+          <h2>今日の練習を始める</h2>
+        </div>
+        <p>直近に解いた問題はなるべく後回し。選択肢も毎回シャッフルして、正解位置の暗記を防ぎます。</p>
+        <div class="challenge-strip" aria-label="今日の練習メニュー">
+          <span>📱 片手で回答</span>
+          <span>🔀 選択肢シャッフル</span>
+          <span>📝 Notion復習</span>
+        </div>
         <div class="settings">
           <label>
             出題数
@@ -37,17 +52,19 @@
             </select>
           </label>
         </div>
-        <button id="start-btn" class="primary">スタート</button>
+        <button id="start-btn" class="primary start-button">今日のチャレンジを始める</button>
       </section>
 
-      <section id="quiz-screen" class="card hidden">
+      <section id="quiz-screen" class="card quiz-card hidden">
         <div class="progress">
           <span id="progress-text">1 / 10</span>
           <span id="category-badge" class="badge"></span>
         </div>
         <div class="bar"><div id="bar-fill"></div></div>
-        <h2 id="question-title"></h2>
-        <p id="question-body"></p>
+        <div class="question-card">
+          <h2 id="question-title"></h2>
+          <p id="question-body"></p>
+        </div>
         <div id="choices" class="choices"></div>
         <div class="quiz-actions">
           <button id="prev-btn" class="ghost">前へ</button>
@@ -55,12 +72,20 @@
         </div>
       </section>
 
-      <section id="result-screen" class="card hidden">
-        <h2>結果</h2>
-        <p id="score" class="score"></p>
-        <p id="feedback"></p>
+      <section id="result-screen" class="card result-card hidden">
+        <div class="section-heading">
+          <span class="section-kicker">Result</span>
+          <h2>今日の結果</h2>
+        </div>
+        <div class="score-card">
+          <span class="score-card__label">SCORE</span>
+          <p id="score" class="score"></p>
+          <p id="score-label" class="score-label"></p>
+        </div>
+        <p id="feedback" class="feedback"></p>
         <div class="result-actions">
-          <button id="retry-btn" class="primary">もう一度</button>
+          <button id="retry-wrong-btn" class="primary retry-wrong-action">間違えた問題だけ再挑戦</button>
+          <button id="retry-btn" class="ghost">条件を変えてもう一度</button>
           <button id="copy-notion-btn" class="ghost">間違いをNotion用にコピー</button>
         </div>
         <h3>復習</h3>
