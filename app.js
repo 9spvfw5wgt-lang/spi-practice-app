@@ -62,18 +62,37 @@ function saveRecentQuestionKeys(questions) {
   );
 }
 
+function buildBalancedAnswerPositions(questionTotal, choiceTotal) {
+  const positions = Array.from({ length: questionTotal }, (_, index) => index % choiceTotal);
+  return shuffle(positions);
+}
 
-function prepareQuestion(question) {
+function prepareQuestion(question, preferredAnswerIndex = null) {
   const shuffledOptions = shuffle(question.choices.map((choice, index) => ({
     choice,
     isCorrect: index === question.answer
   })));
+  const correctIndex = shuffledOptions.findIndex(option => option.isCorrect);
+  const targetIndex = preferredAnswerIndex === null
+    ? correctIndex
+    : preferredAnswerIndex % shuffledOptions.length;
+
+  [shuffledOptions[correctIndex], shuffledOptions[targetIndex]] = [
+    shuffledOptions[targetIndex],
+    shuffledOptions[correctIndex]
+  ];
 
   return {
     ...question,
     choices: shuffledOptions.map(option => option.choice),
-    answer: shuffledOptions.findIndex(option => option.isCorrect)
+    answer: targetIndex
   };
+}
+
+function prepareQuizQuestions(questions) {
+  const choiceTotal = questions[0]?.choices.length || 1;
+  const answerPositions = buildBalancedAnswerPositions(questions.length, choiceTotal);
+  return questions.map((question, index) => prepareQuestion(question, answerPositions[index]));
 }
 
 function selectQuestions(pool, count) {
@@ -103,7 +122,7 @@ function startQuiz() {
 }
 
 function startQuizWithQuestions(questions) {
-  quiz = questions.map(prepareQuestion);
+  quiz = prepareQuizQuestions(questions);
   answers = Array(quiz.length).fill(null);
   current = 0;
 
