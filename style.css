@@ -2,6 +2,7 @@
   font-family: system-ui, -apple-system, BlinkMacSystemFont, "Hiragino Sans", "Yu Gothic", sans-serif;
   color: #162033;
   background: #eef2f7;
+  -webkit-text-size-adjust: 100%;
 }
 
 * {
@@ -16,6 +17,8 @@ body {
   width: min(920px, 100%);
   margin: 0 auto;
   padding: 24px;
+  padding-left: max(24px, env(safe-area-inset-left));
+  padding-right: max(24px, env(safe-area-inset-right));
 }
 
 .hero {
@@ -40,6 +43,13 @@ h1 {
   font-size: 17px;
   line-height: 1.8;
   max-width: 720px;
+}
+
+.helper-text {
+  color: #64748b;
+  font-size: 14px;
+  line-height: 1.7;
+  margin-top: -4px;
 }
 
 .card {
@@ -83,6 +93,13 @@ button {
   font-size: 16px;
   font-weight: 800;
   cursor: pointer;
+  min-height: 48px;
+  touch-action: manipulation;
+}
+
+button:disabled {
+  cursor: not-allowed;
+  opacity: 0.58;
 }
 
 .primary {
@@ -149,6 +166,7 @@ button {
   background: #f8fafc;
   border: 2px solid #dbe3ee;
   color: #162033;
+  line-height: 1.5;
 }
 
 .choice.selected {
@@ -162,6 +180,11 @@ button {
   gap: 12px;
   flex-wrap: wrap;
   justify-content: space-between;
+}
+
+.quiz-actions button,
+.result-actions button {
+  flex: 1 1 180px;
 }
 
 .score {
@@ -192,12 +215,46 @@ button {
 
 @media (max-width: 560px) {
   .app {
-    padding: 16px;
+    padding: 12px;
+    padding-left: max(12px, env(safe-area-inset-left));
+    padding-right: max(12px, env(safe-area-inset-right));
+    padding-bottom: max(18px, env(safe-area-inset-bottom));
+  }
+
+  .hero {
+    padding-top: 18px;
+  }
+
+  .lead {
+    font-size: 15px;
   }
 
   .card {
     padding: 18px;
     border-radius: 20px;
+  }
+
+  .settings {
+    grid-template-columns: 1fr;
+  }
+
+  #question-title {
+    font-size: 21px;
+  }
+
+  .choice {
+    padding: 16px;
+  }
+
+  .quiz-actions,
+  .result-actions {
+    position: sticky;
+    bottom: 0;
+    margin: 20px -18px -18px;
+    padding: 12px 18px max(12px, env(safe-area-inset-bottom));
+    background: rgba(255, 255, 255, 0.96);
+    border-top: 1px solid #e5ebf3;
+    backdrop-filter: blur(10px);
   }
 
   button {
