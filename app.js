@@ -19,6 +19,7 @@ const prevBtn = document.querySelector("#prev-btn");
 const nextBtn = document.querySelector("#next-btn");
 
 const scoreEl = document.querySelector("#score");
+const scoreLabelEl = document.querySelector("#score-label");
 const feedbackEl = document.querySelector("#feedback");
 const reviewList = document.querySelector("#review-list");
 
@@ -61,6 +62,23 @@ function saveRecentQuestionKeys(questions) {
   );
 }
 
+function prepareQuestion(question) {
+  const shuffledOptions = shuffle(question.choices.map((choice, index) => ({
+    choice,
+    isCorrect: index === question.answer
+  })));
+
+  return {
+    ...question,
+    shuffledChoices: shuffledOptions.map(option => option.choice),
+    correctIndex: shuffledOptions.findIndex(option => option.isCorrect)
+  };
+}
+
+function prepareQuizQuestions(questions) {
+  return questions.map(prepareQuestion);
+}
+
 function selectQuestions(pool, count) {
   const targetCount = Math.min(count, pool.length);
   const recentQuestionKeys = getRecentQuestionKeys();
@@ -82,13 +100,13 @@ function startQuiz() {
     ? QUESTION_BANK
     : QUESTION_BANK.filter(q => q.category === category);
 
-  quiz = selectQuestions(pool, count);
-  saveRecentQuestionKeys(quiz);
-  startQuizWithQuestions(quiz);
+  const selectedQuestions = selectQuestions(pool, count);
+  saveRecentQuestionKeys(selectedQuestions);
+  startQuizWithQuestions(selectedQuestions);
 }
 
 function startQuizWithQuestions(questions) {
-  quiz = questions;
+  quiz = prepareQuizQuestions(questions);
   answers = Array(quiz.length).fill(null);
   current = 0;
 
@@ -99,7 +117,7 @@ function startQuizWithQuestions(questions) {
 }
 
 function getWrongQuestions() {
-  return quiz.filter((q, i) => answers[i] !== q.answer);
+  return quiz.filter((q, i) => answers[i] !== q.correctIndex);
 }
 
 function retryWrongQuestions() {
@@ -117,11 +135,11 @@ function renderQuestion() {
   questionBody.textContent = q.body;
 
   choicesEl.innerHTML = "";
-  q.choices.forEach((choice, index) => {
+  q.shuffledChoices.forEach((choice, index) => {
     const btn = document.createElement("button");
     btn.className = "choice";
     if (answers[current] === index) btn.classList.add("selected");
-    btn.textContent = `${String.fromCharCode(65 + index)}. ${choice}`;
+    btn.innerHTML = `<span class="choice-prefix">${String.fromCharCode(65 + index)}</span><span>${choice}</span>`;
     btn.addEventListener("click", () => {
       answers[current] = index;
       renderQuestion();
@@ -153,10 +171,11 @@ function showResult() {
   quizScreen.classList.add("hidden");
   resultScreen.classList.remove("hidden");
 
-  const correctCount = quiz.reduce((sum, q, i) => sum + (answers[i] === q.answer ? 1 : 0), 0);
+  const correctCount = quiz.reduce((sum, q, i) => sum + (answers[i] === q.correctIndex ? 1 : 0), 0);
   const rate = Math.round((correctCount / quiz.length) * 100);
 
-  scoreEl.textContent = `${correctCount} / ${quiz.length} 正解（${rate}%）`;
+  scoreEl.textContent = `${rate}%`;
+  scoreLabelEl.textContent = `${correctCount} / ${quiz.length} 正解`;
   retryWrongBtn.disabled = correctCount === quiz.length;
   retryWrongBtn.textContent = correctCount === quiz.length ? "再挑戦する間違いはありません" : "間違えた問題だけ再挑戦";
 
@@ -181,9 +200,9 @@ function renderReview() {
     const item = document.createElement("div");
     item.className = "review-item";
 
-    const isCorrect = answers[i] === q.answer;
-    const userAnswer = answers[i] === null ? "未回答" : q.choices[answers[i]];
-    const correctAnswer = q.choices[q.answer];
+    const isCorrect = answers[i] === q.correctIndex;
+    const userAnswer = answers[i] === null ? "未回答" : q.shuffledChoices[answers[i]];
+    const correctAnswer = q.shuffledChoices[q.correctIndex];
 
     item.innerHTML = `
       <strong>Q${i + 1}. ${q.title} <span class="${isCorrect ? "correct" : "wrong"}">${isCorrect ? "正解" : "不正解"}</span></strong>
@@ -200,7 +219,7 @@ function renderReview() {
 function makeNotionText() {
   const wrongs = quiz
     .map((q, i) => ({ q, i }))
-    .filter(({ q, i }) => answers[i] !== q.answer);
+    .filter(({ q, i }) => answers[i] !== q.correctIndex);
 
   if (wrongs.length === 0) {
     return "## SPI復習\n\n全問正解。復習対象なし。";
@@ -212,8 +231,8 @@ function makeNotionText() {
     ...wrongs.flatMap(({ q, i }) => [
       `### Q${i + 1} ${q.category}`,
       q.body,
-      `- 自分の回答：${answers[i] === null ? "未回答" : q.choices[answers[i]]}`,
-      `- 正解：${q.choices[q.answer]}`,
+      `- 自分の回答：${answers[i] === null ? "未回答" : q.shuffledChoices[answers[i]]}`,
+      `- 正解：${q.shuffledChoices[q.correctIndex]}`,
       `- 解説：${q.explanation}`,
       ""
     ])
