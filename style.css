@@ -1,0 +1,206 @@
+:root {
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Hiragino Sans", "Yu Gothic", sans-serif;
+  color: #162033;
+  background: #eef2f7;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+}
+
+.app {
+  width: min(920px, 100%);
+  margin: 0 auto;
+  padding: 24px;
+}
+
+.hero {
+  padding: 28px 4px 18px;
+}
+
+.eyebrow {
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: #4f5f78;
+  margin: 0 0 8px;
+}
+
+h1 {
+  margin: 0;
+  font-size: clamp(34px, 7vw, 64px);
+  line-height: 1;
+}
+
+.lead {
+  color: #526176;
+  font-size: 17px;
+  line-height: 1.8;
+  max-width: 720px;
+}
+
+.card {
+  background: white;
+  border: 1px solid #dde4ee;
+  border-radius: 24px;
+  padding: 24px;
+  box-shadow: 0 18px 60px rgba(15, 23, 42, 0.08);
+}
+
+.hidden {
+  display: none;
+}
+
+.settings {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 14px;
+  margin: 22px 0;
+}
+
+label {
+  display: grid;
+  gap: 8px;
+  font-weight: 700;
+}
+
+select {
+  width: 100%;
+  padding: 14px;
+  border: 1px solid #cdd7e5;
+  border-radius: 14px;
+  background: #f8fafc;
+  font-size: 16px;
+}
+
+button {
+  border: 0;
+  border-radius: 16px;
+  padding: 14px 18px;
+  font-size: 16px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.primary {
+  background: #172033;
+  color: white;
+}
+
+.ghost {
+  background: #edf2f7;
+  color: #172033;
+}
+
+.progress {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+}
+
+.badge {
+  display: inline-flex;
+  padding: 7px 12px;
+  border-radius: 999px;
+  background: #edf2f7;
+  color: #44546a;
+  font-weight: 800;
+  font-size: 13px;
+}
+
+.bar {
+  height: 10px;
+  background: #edf2f7;
+  border-radius: 99px;
+  margin: 16px 0 24px;
+  overflow: hidden;
+}
+
+#bar-fill {
+  height: 100%;
+  width: 0%;
+  background: #172033;
+  transition: width .25s ease;
+}
+
+#question-title {
+  font-size: 24px;
+}
+
+#question-body {
+  white-space: pre-wrap;
+  line-height: 1.8;
+  color: #38465a;
+}
+
+.choices {
+  display: grid;
+  gap: 12px;
+  margin: 22px 0;
+}
+
+.choice {
+  width: 100%;
+  text-align: left;
+  background: #f8fafc;
+  border: 2px solid #dbe3ee;
+  color: #162033;
+}
+
+.choice.selected {
+  border-color: #172033;
+  background: #e9eef7;
+}
+
+.quiz-actions,
+.result-actions {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  justify-content: space-between;
+}
+
+.score {
+  font-size: 34px;
+  font-weight: 900;
+  margin: 8px 0;
+}
+
+.review-item {
+  border-top: 1px solid #e5ebf3;
+  padding: 18px 0;
+}
+
+.review-item strong {
+  display: block;
+  margin-bottom: 8px;
+}
+
+.correct {
+  color: #0f7b45;
+  font-weight: 800;
+}
+
+.wrong {
+  color: #b42318;
+  font-weight: 800;
+}
+
+@media (max-width: 560px) {
+  .app {
+    padding: 16px;
+  }
+
+  .card {
+    padding: 18px;
+    border-radius: 20px;
+  }
+
+  button {
+    width: 100%;
+  }
+}
